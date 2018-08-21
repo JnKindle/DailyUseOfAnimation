@@ -18,6 +18,7 @@
 
 @property (nonatomic, weak) UITextField *textField;
 @property (nonatomic, weak) UIView *redView;
+@property (nonatomic, weak) UIButton *favourBtn;
 
 
 @property (nonatomic, weak) UIButton *operationBtn;
@@ -60,6 +61,20 @@
     return _redView;
 }
 
+- (UIButton *)favourBtn
+{
+    if (!_favourBtn) {
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        btn.frame = CGRectMake((JnScreenWidth-40)/2, CGRectGetMaxY(self.redView.frame)+30, 40, 40);
+        [btn setBackgroundImage:[UIImage imageNamed:@"Like"] forState:UIControlStateNormal];
+        [btn setBackgroundImage:[UIImage imageNamed:@"Like-Blue"] forState:UIControlStateSelected];
+        [btn addTarget:self action:@selector(addFavourAnimation:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:btn];
+        _favourBtn = btn;
+    }
+    return _favourBtn;
+}
+
 -(UIButton *)operationBtn
 {
     if (!_operationBtn) {
@@ -83,6 +98,7 @@
     
     [self textField];
     [self redView];
+    [self favourBtn];
     [self operationBtn];
     
     
@@ -132,6 +148,32 @@
     });
 }
 
+
+/**
+ 点赞动画
+
+ @param sender sender description
+ */
+- (void)addFavourAnimation:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    /*
+     transform.scale 设置 x，y,z比例
+     transform.scale.x 设置x比例
+     transform.scale.y 设置y比例
+     */
+    CAKeyframeAnimation *keyframeAni = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    keyframeAni.duration = 0.5;
+    
+    if (sender.selected) {
+        //从小到大，再还原
+        keyframeAni.values = @[@(0.8),@(1.2),@(1.0)];
+    }else {
+        //从大到小，再还原
+        keyframeAni.values = @[@(1.2),@(0.8),@(1.0)];
+    }
+    [self.favourBtn.layer addAnimation:keyframeAni forKey:nil];
+}
 
 
 
